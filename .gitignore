@@ -1,0 +1,15 @@
+
+### 4.2. `.gitignore`
+
+```gitignore
+# Entorno virtual
+venv/
+vscode/
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Otros
+.DS_Store
