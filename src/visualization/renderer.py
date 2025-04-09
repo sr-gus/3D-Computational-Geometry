@@ -143,3 +143,9 @@ class Renderer:
             for vertex in vertices:
                 glVertex3fv(vertex)
             glEnd()
+        elif len(vertices) > 2:
+            glColor3f(1.0, 1.0, 1.0)
+            glBegin(GL_LINE_LOOP)
+            for vertex in vertices:
+                glVertex3fv(vertex)
+            glEnd()

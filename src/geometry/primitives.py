@@ -1,3 +1,5 @@
+import math
+
 class Line:
     def __init__(self, start, end):
         """
@@ -26,14 +28,23 @@ class Arc:
         return []
 
 class Circle:
-    def __init__(self, center, radius):
+    def __init__(self, center, radius, segments=32):
         """
-        center: Tupla (x, y, z)
-        radius: Radio del círculo
+        center: Tupla (x, y, z) que define el centro del círculo.
+        radius: Radio del círculo.
+        segments: Número de segmentos para aproximar el círculo.
         """
         self.center = center
         self.radius = radius
+        self.segments = segments
 
     def get_vertices(self):
-        # Aquí podrías calcular los puntos que conforman el círculo
-        return []
+        vertices = []
+        # Asumimos que el círculo se dibuja en el plano XY (Z fijo)
+        for i in range(self.segments):
+            theta = 2.0 * math.pi * i / self.segments
+            x = self.center[0] + self.radius * math.cos(theta)
+            y = self.center[1] + self.radius * math.sin(theta)
+            z = self.center[2]
+            vertices.append((x, y, z))
+        return vertices
