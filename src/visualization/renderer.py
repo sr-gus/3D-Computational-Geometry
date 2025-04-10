@@ -135,6 +135,7 @@ class Renderer:
         glEnd()
 
     def render_object(self, obj):
+        glColor3f(1.0, 1.0, 1.0)
         vertices = obj.get_vertices()
         if type(obj).__name__ == "Arc":
             glBegin(GL_LINE_STRIP)
