@@ -136,15 +136,17 @@ class Renderer:
 
     def render_object(self, obj):
         vertices = obj.get_vertices()
-        # Suponemos que para líneas se poseen 2 vértices
-        if len(vertices) == 2:
-            glColor3f(1.0, 1.0, 1.0)
+        if type(obj).__name__ == "Arc":
+            glBegin(GL_LINE_STRIP)
+            for vertex in vertices:
+                glVertex3fv(vertex)
+            glEnd()
+        elif len(vertices) == 2:
             glBegin(GL_LINES)
             for vertex in vertices:
                 glVertex3fv(vertex)
             glEnd()
         elif len(vertices) > 2:
-            glColor3f(1.0, 1.0, 1.0)
             glBegin(GL_LINE_LOOP)
             for vertex in vertices:
                 glVertex3fv(vertex)

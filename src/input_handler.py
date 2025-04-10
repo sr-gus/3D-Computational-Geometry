@@ -50,5 +50,37 @@ def process_command(command, renderer):
         new_circle = Circle((x, y, z), radius, segments, plane)
         renderer.objects.append(new_circle)
         print(f"Círculo agregado: centro=({x}, {y}, {z}), radio={radius}, segmentos={segments}, plano={plane.upper()}")
+
+    elif cmd == "arc":
+        # Se espera: arc x y z radius start_angle end_angle [segments] [plane]
+        if len(tokens) < 7:
+            print("Uso: arc x y z radius start_angle end_angle [segments] [plane]")
+            return
+        try:
+            x, y, z = float(tokens[1]), float(tokens[2]), float(tokens[3])
+            radius = float(tokens[4])
+            start_angle = float(tokens[5])
+            end_angle = float(tokens[6])
+        except ValueError:
+            print("Error: Los parámetros x, y, z, radius, start_angle y end_angle deben ser numéricos.")
+            return
+
+        segments = 32
+        plane = "XY"
+        if len(tokens) >= 8:
+            try:
+                segments = int(tokens[7])
+                if len(tokens) >= 9:
+                    plane = tokens[8]
+            except ValueError:
+                # Si no se puede convertir a int, se asume que es el plano
+                plane = tokens[7]
+        from geometry.primitives import Arc
+        new_arc = Arc((x, y, z), radius, start_angle, end_angle, segments, plane)
+        renderer.objects.append(new_arc)
+        print("Arco agregado: centro=({}, {}, {}), radio={}, start_angle={}°, end_angle={}°, segmentos={}, plano={}".format(
+            x, y, z, radius, start_angle, end_angle, segments, plane.upper()
+        ))
+
     else:
         print("Comando no reconocido.")
