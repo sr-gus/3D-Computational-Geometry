@@ -1,3 +1,5 @@
+import math
+
 def process_command(command, renderer):
     tokens = command.split()
     if not tokens:
@@ -82,5 +84,65 @@ def process_command(command, renderer):
             x, y, z, radius, start_angle, end_angle, segments, plane.upper()
         ))
 
+    elif cmd == "arcg":
+        # Sintaxis: arcG start_x start_y start_z end_x end_y end_z offset_x offset_y direction [segments]
+        if len(tokens) < 10:
+            print("Uso: arcG start_x start_y start_z end_x end_y end_z offset_x offset_y direction [segments]")
+            return
+        try:
+            start_x = float(tokens[1])
+            start_y = float(tokens[2])
+            start_z = float(tokens[3])
+            end_x   = float(tokens[4])
+            end_y   = float(tokens[5])
+            end_z   = float(tokens[6])
+            offset_x = float(tokens[7])
+            offset_y = float(tokens[8])
+            direction = tokens[9].lower()  # Se espera 'cw' o 'ccw'
+            segments = 32
+            if len(tokens) >= 11:
+                segments = int(tokens[10])
+        except ValueError:
+            print("Error: Alguno de los parámetros numéricos es inválido (excepto la dirección).")
+            return
+
+        # Calcular el centro (se asume trabajo en el plano XY)
+        center = (start_x + offset_x, start_y + offset_y, start_z)
+        # Radio: distancia entre el centro y el punto de inicio (solo en XY)
+        radius = math.sqrt(offset_x**2 + offset_y**2)
+        # Calcular ángulos en radianes (con respecto al centro) para inicio y fin
+        start_angle = math.atan2(start_y - center[1], start_x - center[0])
+        end_angle   = math.atan2(end_y   - center[1], end_x   - center[0])
+        
+        # Calcular las diferencias de ángulo:
+        cw_diff  = (start_angle - end_angle) % (2*math.pi)
+        ccw_diff = (end_angle - start_angle) % (2*math.pi)
+        
+        # Si la diferencia entre cw_diff y ccw_diff es casi nula, se trata de un arco de 180°
+        if abs(cw_diff - ccw_diff) < 1e-6:
+            print("Aviso: El arco es de 180°; en estos casos, la dirección (CW/CCW) no afecta el resultado.")
+
+        # Según el parámetro de dirección, se ajusta el ángulo final
+        if direction in ["cw", "horario", "h"]:
+            # Para el sentido horario, queremos que el recorrido sea de 'cw_diff'
+            end_angle_actual = start_angle - cw_diff
+        elif direction in ["ccw", "antihorario", "ah"]:
+            # Para el sentido antihorario, usamos 'ccw_diff'
+            end_angle_actual = start_angle + ccw_diff
+        else:
+            print("Error: Dirección no reconocida. Usa 'CW' para horario o 'CCW' para antihorario.")
+            return
+
+        from geometry.primitives import Arc
+        new_arc = Arc(center, radius,
+                      math.degrees(start_angle),
+                      math.degrees(end_angle_actual),
+                      segments, "XY")
+        renderer.objects.append(new_arc)
+        print(f"ArcG agregado: centro={center}, radio={radius:.2f}, "
+              f"start_angle={math.degrees(start_angle):.2f}°, "
+              f"end_angle={math.degrees(end_angle_actual):.2f}°, "
+              f"segmentos={segments}, dirección={'Horario' if direction in ['cw','horario','h'] else 'Antihorario'}")
+            
     else:
         print("Comando no reconocido.")

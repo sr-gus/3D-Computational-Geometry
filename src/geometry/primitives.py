@@ -65,7 +65,7 @@ class Arc:
         self.start_angle = math.radians(start_angle)
         self.end_angle = math.radians(end_angle)
         # Si end_angle queda menor que start_angle, se asume un giro completo (se le suma 2π)
-        if self.end_angle < self.start_angle:
+        if self.end_angle < self.start_angle and (self.start_angle - self.end_angle) < math.pi:
             self.end_angle += 2 * math.pi
         self.segments = segments
         self.plane = plane.upper()
