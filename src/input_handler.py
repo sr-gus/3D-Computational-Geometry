@@ -143,6 +143,29 @@ def process_command(command, renderer):
               f"start_angle={math.degrees(start_angle):.2f}°, "
               f"end_angle={math.degrees(end_angle_actual):.2f}°, "
               f"segmentos={segments}, dirección={'Horario' if direction in ['cw','horario','h'] else 'Antihorario'}")
-            
+
+    elif cmd == "list":
+        if not renderer.objects:
+            print("No hay objetos creados.")
+        else:
+            print("Objetos creados:")
+            for i, obj in enumerate(renderer.objects):
+                # Se muestra el índice, el tipo y la representación
+                print(f"{i}: {type(obj).__name__} - {obj}")
+    
+    elif cmd == "delete":
+        if len(tokens) < 2:
+            print("Uso: delete <índice>")
+        else:
+            try:
+                index = int(tokens[1])
+                if index < 0 or index >= len(renderer.objects):
+                    print("Índice fuera de rango.")
+                else:
+                    removed_obj = renderer.objects.pop(index)
+                    print(f"Objeto eliminado: {type(removed_obj).__name__}")
+            except ValueError:
+                print("Error: el índice debe ser un número entero.")
+
     else:
         print("Comando no reconocido.")

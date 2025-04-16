@@ -11,6 +11,9 @@ class Line:
     def get_vertices(self):
         return [self.start, self.end]
 
+    def __str__(self):
+        return f"Line from {self.start} to {self.end}"
+
 class Circle:
     def __init__(self, center, radius, segments=32, plane="XY"):
         """
@@ -24,6 +27,9 @@ class Circle:
         self.radius = radius
         self.segments = segments
         self.plane = plane.upper()  # Se asegura de que esté en mayúsculas
+
+    def __str__(self):
+        return f"Circle with center {self.center} and radius {self.radius} in plane {self.plane}"
 
     def get_vertices(self):
         vertices = []
@@ -94,3 +100,9 @@ class Arc:
                 z = self.center[2]
             vertices.append((x, y, z))
         return vertices
+
+    def __str__(self):
+        # Se convierte de radianes a grados para mostrarlo
+        return (f"Arc with center {self.center}, radius {self.radius}, "
+                f"start_angle {math.degrees(self.start_angle):.1f}°, "
+                f"end_angle {math.degrees(self.end_angle):.1f}° in plane {self.plane}")
