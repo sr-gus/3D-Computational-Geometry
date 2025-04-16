@@ -167,5 +167,66 @@ def process_command(command, renderer):
             except ValueError:
                 print("Error: el índice debe ser un número entero.")
 
+    elif cmd == "rotate":
+        # Se admite dos sintaxis:
+        #    rotate <id|all> axis angle
+        #    rotate <id|all> angle_x angle_y angle_z
+        if len(tokens) not in [4, 5]:
+            print("Usage: rotate <id|all> axis angle  OR  rotate <id|all> angle_x angle_y angle_z")
+            return
+
+        target_spec = tokens[1].lower()
+        # Caso 1: rotación en un único eje (se espera 'axis' y luego 'angle')
+        if len(tokens) == 4:
+            axis = tokens[2].lower()
+            try:
+                angle = float(tokens[3])
+            except ValueError:
+                print("Error: Angle must be numeric.")
+                return
+            # Aquí llamamos a la función rotate del módulo de transformations,
+            # pasándole el target y los parámetros necesarios.
+            from transforms.transformations import rotate as transform_rotate
+            if target_spec == "all":
+                for obj in renderer.objects:
+                    transform_rotate(obj, angle, axis=axis)
+                print("Rotation applied to ALL objects (global).")
+            else:
+                try:
+                    index = int(target_spec)
+                except ValueError:
+                    print("Error: Identifier must be a number or 'all'.")
+                    return
+                if index < 0 or index >= len(renderer.objects):
+                    print("Error: Index out of range.")
+                    return
+                transform_rotate(renderer.objects[index], angle, axis=axis)
+                print(f"Rotation applied to object {index} (global).")
+        # Caso 2: rotación en los tres ejes (angle_x, angle_y, angle_z)
+        elif len(tokens) == 5:
+            try:
+                angle_x = float(tokens[2])
+                angle_y = float(tokens[3])
+                angle_z = float(tokens[4])
+            except ValueError:
+                print("Error: Angles must be numeric.")
+                return
+            from transforms.transformations import rotate as transform_rotate
+            if target_spec == "all":
+                for obj in renderer.objects:
+                    transform_rotate(obj, angle_x, angle_y, angle_z)
+                print("Rotation applied to ALL objects (global).")
+            else:
+                try:
+                    index = int(target_spec)
+                except ValueError:
+                    print("Error: Identifier must be a number or 'all'.")
+                    return
+                if index < 0 or index >= len(renderer.objects):
+                    print("Error: Index out of range.")
+                    return
+                transform_rotate(renderer.objects[index], angle_x, angle_y, angle_z)
+                print(f"Rotation applied to object {index} (global).")
+
     else:
         print("Comando no reconocido.")
