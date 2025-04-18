@@ -38,12 +38,24 @@ def rotation_matrix_z(theta):
         [0, 0, 0, 1]
     ])
 
-def translate(point, vector):
+def translation_matrix(dx, dy, dz):
     """
-    Traslada un punto aplicando el vector.
-    point, vector: Tuplas o arrays de 3 elementos.
+    Retorna una matriz 4x4 de traslación.
     """
-    return tuple(np.array(point) + np.array(vector))
+    return np.array([
+        [1, 0, 0, dx],
+        [0, 1, 0, dy],
+        [0, 0, 1, dz],
+        [0, 0, 0, 1]
+    ])
+
+def apply_translation(target, dx, dy, dz):
+    """
+    Aplica una transformación de traslación al objeto.
+    """
+    if hasattr(target, "matrix"):
+        T = translation_matrix(dx, dy, dz)
+        target.matrix = T @ target.matrix
 
 def rotate(target, *angles, axis=None):
     """
@@ -106,8 +118,21 @@ def rotate(target, *angles, axis=None):
     # Caso por defecto: retorna la matriz (aunque no se debería llegar aquí)
     return R
 
-def scale(point, factor):
+def scaling_matrix(factor):
     """
-    Escala un punto por un factor.
+    Retorna una matriz 4x4 de escalado uniforme.
     """
-    return tuple(np.array(point) * factor)
+    return np.array([
+        [factor, 0, 0, 0],
+        [0, factor, 0, 0],
+        [0, 0, factor, 0],
+        [0, 0, 0, 1]
+    ])
+
+def apply_scale(target, factor):
+    """
+    Aplica una transformación de escalado al objeto.
+    """
+    if hasattr(target, "matrix"):
+        S = scaling_matrix(factor)
+        target.matrix = S @ target.matrix
