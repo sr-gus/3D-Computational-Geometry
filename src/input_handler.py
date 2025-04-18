@@ -328,5 +328,23 @@ def process_command(command, renderer):
         renderer.grid_height = offset
         print(f"Grid movida a {offset}.")
 
+    elif cmd == "grid_step":
+        # Sintaxis: grid_step <step>
+        if len(tokens) != 2:
+            print("Uso: grid_step <step>  —  step: paso del dibujado del grid")
+            return
+       
+        try:
+            step = float(tokens[1])
+        except ValueError:
+            print("Error: El step debe ser numérico.")
+            return
+
+        if step != 0:
+            renderer.grid_step = step
+            print(f"Step del grid cambiado a {step}.")
+        else:
+            print("El step debe ser diferente de cero")
+
     else:
         print("Comando no reconocido.")

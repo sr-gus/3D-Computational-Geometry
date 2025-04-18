@@ -4,6 +4,7 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import numpy as np
+import math
 
 class Renderer:
     def __init__(self, width=800, height=600):
@@ -19,6 +20,7 @@ class Renderer:
         self.grid_height = 0.0
         # Nuevo: tipo de plano para el grid: 0=XY, 1=YZ, 2=ZX
         self.grid_plane = 0
+        self.grid_step = 1.0
 
     def initialize_window(self):
         pygame.init()
@@ -28,7 +30,7 @@ class Renderer:
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(45, (self.width / self.height), 0.1, 500.0)  #Aumentar a 500 el parámetro soluciona el tema del zoom out
+        gluPerspective(45, (self.width / self.height), 0.1, 5000.0)  #Aumentar a 500 el parámetro soluciona el tema del zoom out
 
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
@@ -115,24 +117,38 @@ class Renderer:
     def draw_grid(self):
         glColor3f(0.5, 0.5, 0.5)
         glBegin(GL_LINES)
+        # Extensión del grid
         grid_range = max(2.0, 2 * self.zoom)
-        step = 1.0
-        for i in np.arange(-grid_range, grid_range + step, step):
-            if self.grid_plane == 0:  # XY
+        s = self.grid_step
+
+        # Calculamos el límite inferior y superior alineado a múltiplos de 's'
+        min_i = math.ceil(-grid_range / s) * s
+        max_i = math.floor( grid_range / s) * s
+
+        # Recorremos desde min_i hasta max_i con paso 's'
+        i = min_i
+        while i <= max_i + 1e-6:   # +epsilon para incluir el extremo
+            if self.grid_plane == 0:  # plano XY (normal Z)
+                # líneas paralelas a Z
                 glVertex3f(i, self.grid_height, -grid_range)
-                glVertex3f(i, self.grid_height, grid_range)
+                glVertex3f(i, self.grid_height,  grid_range)
+                # líneas paralelas a X
                 glVertex3f(-grid_range, self.grid_height, i)
-                glVertex3f(grid_range, self.grid_height, i)
-            elif self.grid_plane == 1:  # YZ
+                glVertex3f( grid_range, self.grid_height, i)
+
+            elif self.grid_plane == 1:  # plano YZ (normal X)
                 glVertex3f(self.grid_height, i, -grid_range)
-                glVertex3f(self.grid_height, i, grid_range)
+                glVertex3f(self.grid_height, i,  grid_range)
                 glVertex3f(self.grid_height, -grid_range, i)
-                glVertex3f(self.grid_height, grid_range, i)
-            elif self.grid_plane == 2:  # ZX
+                glVertex3f(self.grid_height,  grid_range, i)
+
+            else:  # plano ZX (normal Y)
                 glVertex3f(i, -grid_range, self.grid_height)
-                glVertex3f(i, grid_range, self.grid_height)
+                glVertex3f(i,  grid_range, self.grid_height)
                 glVertex3f(-grid_range, i, self.grid_height)
-                glVertex3f(grid_range, i, self.grid_height)
+                glVertex3f( grid_range, i, self.grid_height)
+
+            i += s
         glEnd()
 
     def render_object(self, obj):
