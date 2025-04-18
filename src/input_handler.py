@@ -313,5 +313,20 @@ def process_command(command, renderer):
             apply_reflection(renderer.objects[idx], plane)
             print(f"Reflexión aplicada al objeto {idx} respecto al plano {plane}.")
 
+    elif cmd == "move_grid":
+        # Sintaxis: move_grid <position>
+        if len(tokens) != 2:
+            print("Uso: move_grid <position>  —  position: coordinate in current axis")
+            return
+       
+        try:
+            offset = float(tokens[1])
+        except ValueError:
+            print("Error: El position debe ser numérico.")
+            return
+
+        renderer.grid_height = offset
+        print(f"Grid movida a {offset}.")
+
     else:
         print("Comando no reconocido.")
