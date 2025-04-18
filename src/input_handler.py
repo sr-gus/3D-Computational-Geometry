@@ -283,6 +283,35 @@ def process_command(command, renderer):
             except ValueError:
                 print("Error: el índice debe ser un número entero o 'all'.")
 
+    elif cmd == "reflect":
+        # Sintaxis: reflect <id|all> <plane>
+        # donde plane es uno de: XY, XZ, YZ
+        if len(tokens) != 3:
+            print("Uso: reflect <id|all> <plane>  —  plano: XY, XZ o YZ")
+            return
+        target_spec = tokens[1].lower()
+        plane = tokens[2].upper()
+        from transforms.transformations import apply_reflection
+        # Validamos el plano
+        if plane not in ("XY", "XZ", "YZ"):
+            print("Error: Plano desconocido. Usa 'XY', 'XZ' o 'YZ'.")
+            return
+
+        if target_spec == "all":
+            for obj in renderer.objects:
+                apply_reflection(obj, plane)
+            print(f"Reflexión aplicada a TODOS los objetos respecto al plano {plane}.")
+        else:
+            try:
+                idx = int(target_spec)
+            except ValueError:
+                print("Error: Identificador debe ser un número o 'all'.")
+                return
+            if idx < 0 or idx >= len(renderer.objects):
+                print("Error: Índice fuera de rango.")
+                return
+            apply_reflection(renderer.objects[idx], plane)
+            print(f"Reflexión aplicada al objeto {idx} respecto al plano {plane}.")
 
     else:
         print("Comando no reconocido.")

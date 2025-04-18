@@ -136,3 +136,57 @@ def apply_scale(target, factor):
     if hasattr(target, "matrix"):
         S = scaling_matrix(factor)
         target.matrix = S @ target.matrix
+
+def reflection_matrix(plane):
+    """
+    Retorna la matriz 4×4 que refleja respecto al plano indicado:
+      - "XY": invierte Z
+      - "XZ": invierte Y
+      - "YZ": invierte X
+    """
+    p = plane.upper()
+    if p == "XY":
+        # Z → −Z
+        return np.array([
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, -1, 0],
+            [0, 0, 0, 1]
+        ])
+    elif p == "XZ":
+        # Y → −Y
+        return np.array([
+            [1, 0, 0, 0],
+            [0, -1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ])
+    elif p == "YZ":
+        # X → −X
+        return np.array([
+            [-1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ])
+    else:
+        raise ValueError("reflection_matrix: Unknown plane. Use 'XY', 'XZ' or 'YZ'.")
+
+def apply_reflection(target, plane):
+    """
+    Aplica simetría (reflexión) al objeto o punto:
+      - Si target es un objeto con `matrix`, le multiplica la matriz de reflexión a la izquierda.
+      - Si target es un punto (x,y,z), devuelve el punto reflejado.
+    """
+    R = reflection_matrix(plane)
+    # punto
+    if isinstance(target, tuple) and len(target) == 3:
+        p_hom = np.array(list(target) + [1])
+        p_ref = p_hom @ R.T
+        return tuple(p_ref[:3])
+    # objeto con matriz
+    if hasattr(target, "matrix"):
+        target.matrix = R @ target.matrix
+        return target
+    # si no es ninguno, devolvemos la matriz pura
+    return R
