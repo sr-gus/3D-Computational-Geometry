@@ -172,7 +172,7 @@ def process_command(command, renderer):
         #    rotate <id|all> axis angle
         #    rotate <id|all> angle_x angle_y angle_z
         if len(tokens) not in [4, 5]:
-            print("Usage: rotate <id|all> axis angle  OR  rotate <id|all> angle_x angle_y angle_z")
+            print("Usage: rotate <id|all> <axis> <angle>  OR  rotate <id|all> <angle_x> <angle_y> <angle_z>")
             return
 
         target_spec = tokens[1].lower()
@@ -227,6 +227,62 @@ def process_command(command, renderer):
                     return
                 transform_rotate(renderer.objects[index], angle_x, angle_y, angle_z)
                 print(f"Rotation applied to object {index} (global).")
+    
+
+    elif cmd == "translate":
+        if len(tokens) != 5:
+            print("Uso: translate <id|all> dx dy dz")
+            return
+        try:
+            target_spec = tokens[1].lower()
+            dx, dy, dz = float(tokens[2]), float(tokens[3]), float(tokens[4])
+        except ValueError:
+            print("Error: Los desplazamientos deben ser numéricos.")
+            return
+
+        from transforms.transformations import apply_translation
+        if target_spec == "all":
+            for obj in renderer.objects:
+                apply_translation(obj, dx, dy, dz)
+            print("Traslación aplicada a TODOS los objetos.")
+        else:
+            try:
+                index = int(target_spec)
+                if index < 0 or index >= len(renderer.objects):
+                    print("Índice fuera de rango.")
+                    return
+                apply_translation(renderer.objects[index], dx, dy, dz)
+                print(f"Traslación aplicada al objeto {index}.")
+            except ValueError:
+                print("Error: el índice debe ser un número entero o 'all'.")
+
+    elif cmd == "escalate":
+        if len(tokens) != 3:
+            print("Uso: escalate <id|all> factor")
+            return
+        try:
+            target_spec = tokens[1].lower()
+            factor = float(tokens[2])
+        except ValueError:
+            print("Error: El factor de escala debe ser numérico.")
+            return
+
+        from transforms.transformations import apply_scale
+        if target_spec == "all":
+            for obj in renderer.objects:
+                apply_scale(obj, factor)
+            print("Escalado aplicado a TODOS los objetos.")
+        else:
+            try:
+                index = int(target_spec)
+                if index < 0 or index >= len(renderer.objects):
+                    print("Índice fuera de rango.")
+                    return
+                apply_scale(renderer.objects[index], factor)
+                print(f"Escalado aplicado al objeto {index}.")
+            except ValueError:
+                print("Error: el índice debe ser un número entero o 'all'.")
+
 
     else:
         print("Comando no reconocido.")
