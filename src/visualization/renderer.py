@@ -28,7 +28,7 @@ class Renderer:
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(45, (self.width / self.height), 0.1, 50.0)
+        gluPerspective(45, (self.width / self.height), 0.1, 500.0)  #Aumentar a 500 el parámetro soluciona el tema del zoom out
 
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
