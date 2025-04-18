@@ -17,6 +17,8 @@ class Renderer:
         self.zoom = 5.0     # Distancia inicial de la cámara
         self.show_grid = False
         self.grid_height = 0.0
+        # Nuevo: tipo de plano para el grid: 0=XY, 1=YZ, 2=ZX
+        self.grid_plane = 0
 
     def initialize_window(self):
         pygame.init()
@@ -69,6 +71,13 @@ class Renderer:
                 elif event.key == pygame.K_DOWN:
                     self.grid_height -= 0.5
                     print("Grid height:", self.grid_height)
+                elif event.key == pygame.K_LEFT:
+                    self.grid_plane = (self.grid_plane - 1) % 3
+                    print("Grid plane:", ["XY", "YZ", "ZX"][self.grid_plane])
+                elif event.key == pygame.K_RIGHT:
+                    self.grid_plane = (self.grid_plane + 1) % 3
+                    print("Grid plane:", ["XY", "YZ", "ZX"][self.grid_plane])
+
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
@@ -109,11 +118,21 @@ class Renderer:
         grid_range = max(2.0, 2 * self.zoom)
         step = 1.0
         for i in np.arange(-grid_range, grid_range + step, step):
-            glVertex3f(i, self.grid_height, -grid_range)
-            glVertex3f(i, self.grid_height, grid_range)
-        for i in np.arange(-grid_range, grid_range + step, step):
-            glVertex3f(-grid_range, self.grid_height, i)
-            glVertex3f(grid_range, self.grid_height, i)
+            if self.grid_plane == 0:  # XY
+                glVertex3f(i, self.grid_height, -grid_range)
+                glVertex3f(i, self.grid_height, grid_range)
+                glVertex3f(-grid_range, self.grid_height, i)
+                glVertex3f(grid_range, self.grid_height, i)
+            elif self.grid_plane == 1:  # YZ
+                glVertex3f(self.grid_height, i, -grid_range)
+                glVertex3f(self.grid_height, i, grid_range)
+                glVertex3f(self.grid_height, -grid_range, i)
+                glVertex3f(self.grid_height, grid_range, i)
+            elif self.grid_plane == 2:  # ZX
+                glVertex3f(i, -grid_range, self.grid_height)
+                glVertex3f(i, grid_range, self.grid_height)
+                glVertex3f(-grid_range, i, self.grid_height)
+                glVertex3f(grid_range, i, self.grid_height)
         glEnd()
 
     def render_object(self, obj):
