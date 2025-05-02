@@ -67,16 +67,16 @@ class Renderer:
                 if event.key == pygame.K_g:
                     self.show_grid = not self.show_grid
                     print("Grid toggled:", self.show_grid)
-                elif event.key == pygame.K_UP:
+                elif event.key == pygame.K_UP and self.show_grid:
                     self.grid_height += 0.5 - self.grid_height % 0.5
                     print("Grid height:", self.grid_height)
-                elif event.key == pygame.K_DOWN:
+                elif event.key == pygame.K_DOWN and self.show_grid:
                     self.grid_height -= (self.grid_height % 0.5) or 0.5
                     print("Grid height:", self.grid_height)
-                elif event.key == pygame.K_LEFT:
+                elif event.key == pygame.K_LEFT and self.show_grid:
                     self.grid_plane = (self.grid_plane - 1) % 3
                     print("Grid plane:", ["XY", "YZ", "ZX"][self.grid_plane])
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_RIGHT and self.show_grid:
                     self.grid_plane = (self.grid_plane + 1) % 3
                     print("Grid plane:", ["XY", "YZ", "ZX"][self.grid_plane])
 
