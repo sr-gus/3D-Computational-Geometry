@@ -1,5 +1,6 @@
 from typing import List
 from .base import Command
+from .help import HelpCommand
 from .line import LineCommand
 from .circle import CircleCommand
 from .arc import ArcCommand
@@ -13,7 +14,7 @@ from .reflect import ReflectCommand
 from .grid import MoveGridCommand, GridStepCommand
 
 all_commands: List[Command] = [
-    LineCommand(), CircleCommand(), ArcCommand(), ArcGCommand(),
+    HelpCommand(), LineCommand(), CircleCommand(), ArcCommand(), ArcGCommand(),
     ListCommand(), DeleteCommand(),
     RotateCommand(), TranslateCommand(), ScaleCommand(), ReflectCommand(),
     MoveGridCommand(), GridStepCommand(),
